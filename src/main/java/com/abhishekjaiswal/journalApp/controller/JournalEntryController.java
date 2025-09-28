@@ -1,7 +1,7 @@
-package net.engineeringdigest.journalApp.controller;
+package com.abhishekjaiswal.journalApp.controller;
 
-import net.engineeringdigest.journalApp.entity.JournalEntry;
-import net.engineeringdigest.journalApp.service.JournalEntryService;
+import com.abhishekjaiswal.journalApp.entity.JournalEntry;
+import com.abhishekjaiswal.journalApp.service.JournalEntryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +37,17 @@ public class JournalEntryController {
     public Boolean deleteEntryById(@PathVariable ObjectId journalId){
         journalEntryService.deleteById(journalId);
         return true;
+    }
+
+    @PutMapping("/{journalId}")
+    public JournalEntry updateEntry(@PathVariable ObjectId journalId, @RequestBody JournalEntry newEntry){
+        JournalEntry oldEntry = journalEntryService.findEntryById(journalId).orElse(null);
+        if(oldEntry!=null){
+          oldEntry.setTitle(newEntry.getTitle()!= null && newEntry.getTitle().equals("") ? newEntry.getTitle() : oldEntry.getTitle());
+          oldEntry.setContent(newEntry.getContent()!= null && newEntry.getContent().equals("") ? newEntry.getContent() : oldEntry.getContent());
+        }
+        journalEntryService.saveEntry(oldEntry);
+        return newEntry;
     }
 
 
